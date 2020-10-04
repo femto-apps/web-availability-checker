@@ -169,9 +169,28 @@ function generateShort(options) {
 
         const responses = await Response.find({ event: event._id })
 
-        console.log(responses)
+        let times = {
 
-        res.send('hello')
+        }
+
+        for (let response of responses) {
+            for (let date of response.dates) {
+                if (!(date[0] in times)) {
+                    times[date[0]] = {}
+                }
+
+                times[date[0]][response.name] = date[1]
+            }
+        }
+
+        console.log(times)
+
+        res.render('responses', {
+            page: { title: `Responses :: ${event.name} :: ${config.get('title.suffix')}` },
+            times,
+            people: Object.keys(Object.values(times)[0]),
+            dateformat
+        })
     })
 
     app.get('/event/:short', async (req, res) => {

@@ -1,0 +1,28 @@
+extends components/base
+
+block main
+    style.
+        .no-base {
+            border-bottom: 0rem;
+        }
+
+    section
+        center
+            p
+                b Check when friends / colleagues are available
+
+    section
+        table
+            thead
+                tr
+                    th Time
+                    for person in people
+                        th= person
+            tbody
+                for responses, time in times
+                    tr
+                        td= dateformat(time, "dddd, mmmm dS")
+                        for person in people
+                            td= responses[person]
+
+            p= JSON.stringify(time)

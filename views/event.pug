@@ -21,6 +21,12 @@ block head
             background-color: inherit !important;
         }
 
+        .color {
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+        }
+
     link(href="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.css" rel="stylesheet")
     script(src="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.js")
     script const start = !{JSON.stringify(dateArray).replace(/<\//g, '<\\/')}
@@ -135,7 +141,9 @@ block head
 
             calendar.render()
         })
-
+    noscript
+        style.
+            .jsonly { display: none }
 
 block main
     section
@@ -153,6 +161,17 @@ block main
                 label(for='name') Your Name
                 input(type='text', name='name', placeholder='Bob A' autocorrect='off', spellcheck='false', autocapitalize='off', autofocus='true')#name
 
+                .jsonly
+                    label(for='calendar') Available Days
+
+                    blockquote
+                        div Click on days to change their availability status:
+                        span #[.color(style='background-color: rgba(255, 220, 40, 0.55)')] Orange = Maybe
+                        br
+                        span #[.color(style='background-color: rgb(255, 159, 137)')] Red = No
+                        br
+                        span #[.color(style='background-color: rgb(143, 223, 130)')] Green = Yes
+                        div Click and drag to select multiple if you desire.
                 #calendar
 
                 noscript
