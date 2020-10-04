@@ -1,28 +1,21 @@
 {
-    port: 3005
+    port: 9853
     title: {
-        suffix: Femto Uploader
+        suffix: Femto Availability
     }
     mongo: {
         uri: mongodb://localhost:27017/
-        db: fileUploader
-    }
-    minio: {
-        host: 127.0.0.1
-        port: 9000
-        accessKey: CHANGE_ME_ACCESS_KEY
-        secretKey: CHANGE_ME_SECRET_KEY
-        itemBucket: items
+        db: availabilityChecker
     }
     session: {
-        secret: 3a8glh3al85tgh3a538haga38g
+        secret: 3a8glh3gtrsal85tgh3a538haga38g
     }
     redis: {
         host: localhost
         port: 6379
     }
     cookie: {
-        name: file-uploader
+        name: availability-checker
         maxAge: 15552000000 // 1000 * 60 * 60 * 24 * 180 (6 months)
     }
     tokenService: {
