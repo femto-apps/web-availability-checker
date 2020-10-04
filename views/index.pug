@@ -1,0 +1,33 @@
+extends components/base
+
+block main
+    style.
+        .no-base {
+            border-bottom: 0rem;
+        }
+
+    section
+        center
+            p
+                b Check when friends / colleagues are available
+
+    section
+        form(action='/event', method='post')
+
+            h3 Create New Event
+
+            fieldset
+                label(for='name') Event Name
+                input(type='text', name='name', placeholder='An Awesome Party' autocorrect='off', spellcheck='false', autocapitalize='off', autofocus='true')#name
+
+                label(for='start') Start From 
+                input(type='date', name='start')#start
+
+                label(for='end') End At
+                input(type='date', name='end')#end
+
+                .float-right
+                    input#weekdays(name='weekdays', type='checkbox')
+                    label.label-inline(for='weekdays') Weekdays only?
+
+                input(type='submit', value='Submit')

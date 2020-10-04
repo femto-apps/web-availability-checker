@@ -1,0 +1,25 @@
+include ./nav
+
+doctype html
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        title= page.title
+        meta(name='description', content='Femto Availability Chceker')
+        meta(name='author', content='Femto Apps')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic')
+        link(rel='stylesheet', href='https://cdn.jsdelivr.net/gh/femto-apps/lib-style@c75a709/dist/main.css')
+        block head
+
+    body
+        container
+            +nav(nav.title, nav.links)
+
+            main
+                block main
+
+            footer
+                section 
+                    | The source for this website is available #[a(href='https://github.com/femto-apps/web-availability-checker') here]
+                    | under a #[a(href='https://github.com/femto-apps/web-availability-checker/blob/master/LICENSE') MIT] license.

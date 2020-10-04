@@ -1,0 +1,166 @@
+extends components/base
+
+block head
+    style.
+        table {
+            margin-bottom: 0rem;
+        }
+
+        .fc-day-today {
+            background-color: inherit !important;
+        }
+
+        .fc-event-title {
+            font-size: 1.85em !important;
+            color: #b881d9 !important;
+            font-weight: bold !important;
+            font-style: normal !important;
+        }
+
+        .fc-highlight {
+            background-color: inherit !important;
+        }
+
+    link(href="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.css" rel="stylesheet")
+    script(src="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.js")
+    script const start = !{JSON.stringify(dateArray).replace(/<\//g, '<\\/')}
+    script.
+        function addDataToForm(form, data) {
+            if(typeof form === 'string') {
+                if(form[0] === '#') form = form.slice(1);
+                form = document.getElementById(form);
+            }
+
+            var keys = Object.keys(data);
+            var name;
+            var value;
+            var input;
+
+            for (var i = 0; i < keys.length; i++) {
+                name = keys[i];
+                // removing the inputs with the name if already exists [overide]
+                // console.log(form);
+                Array.prototype.forEach.call(form.elements, function (inpt) {
+                    if(inpt.name === name) {
+                        inpt.parentNode.removeChild(inpt);
+                    }
+                });
+
+                value = data[name];
+                input = document.createElement('input');
+                input.setAttribute('name', name);
+                input.setAttribute('value', value);
+                input.setAttribute('type', 'hidden');
+
+                form.appendChild(input);
+            }
+
+            return form;
+        }
+
+        const events = start.map(dateStr => {
+            const date = new Date(dateStr)
+            const end = new Date(new Date(date).setDate(date.getDate() + 1))
+
+            return {
+                description: 'unknown',
+                id: date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, '0') + "-" + date.getDate(),
+                start: date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, '0') + "-" + date.getDate(),
+                end: end.getFullYear() + "-" + String(end.getMonth() + 1).padStart(2, '0') + "-" + end.getDate(),
+                overlap: false,
+                display: 'background',
+                color: 'rgba(255,220,40,.55)'
+            }
+        })
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const responseEl = document.getElementById('response')
+
+            const calendarEl = document.getElementById('calendar')
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                dateClick: info => {
+                    //- updateDay(info.dateStr)
+                    //- console.log(info.dateStr)
+                },
+                select: info => {
+                    const dateArray = []
+                    let currentDate = new Date(info.startStr)
+
+                    while (currentDate < new Date(info.endStr)) {
+                        dateArray.push(new Date(currentDate))
+                        currentDate.setDate(currentDate.getDate() + 1)
+                    }
+
+                    for (let date of dateArray) {
+                        updateDay(date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, '0') + "-" + date.getDate())
+                    }
+                },
+                events: events
+            })
+
+            responseEl.onsubmit = () => {
+                const events = calendar.getEvents()
+
+                let response = {}
+                for (let event of events) {
+                    response['date-' + event._def.publicId] = event._def.extendedProps.description
+                }
+
+                addDataToForm(responseEl, response)
+            }
+
+            function updateDay(day) {
+                console.log(day)
+
+                const event = calendar.getEventById(day)
+                if (!event) return
+
+                console.log(event)
+
+                if (event._def.extendedProps.description === 'unknown' || event._def.extendedProps.description === 'maybe') {
+                    event.setExtendedProp('description', 'yes')
+                    event.setProp('color', '#8fdf82')
+                } else if (event._def.extendedProps.description === 'yes') {
+                    event.setExtendedProp('description', 'no')
+                    event.setProp('color', 'rgb(255, 159, 137)')
+                } else if (event._def.extendedProps.description === 'no') {
+                    event.setExtendedProp('description', 'maybe')
+                    event.setProp('color', 'rgba(255,220,40,.55)')
+                }
+
+            }
+
+
+            calendar.render()
+        })
+
+
+block main
+    section
+        center
+            p
+                b Check when friends / colleagues are available
+
+    section
+        form(action='/event/response/' + event.short, method='post')#response
+            h3= event.name
+            
+            p Submit which days you are available for this event:
+
+            fieldset
+                label(for='name') Your Name
+                input(type='text', name='name', placeholder='Bob A' autocorrect='off', spellcheck='false', autocapitalize='off', autofocus='true')#name
+
+                #calendar
+
+                noscript
+                    for day in dateArray
+                        input(name='date-' + dateformat(day, "isoDate"), type='checkbox')
+                        label.label-inline(for='date-' + dateformat(day, "isoDate"))= dateformat(day, "dddd, mmmm dS")
+                        br
+
+                br
+
+                input(type='submit', value='Submit')
